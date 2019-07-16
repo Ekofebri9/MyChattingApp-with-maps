@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text,TextInput, View, TouchableOpacity } from 'react-native';
 import Logo from '../components/Logo';
-import Form from '../components/Form';
+import Form from '../components/FormRegister';
 
-export default class Login extends Component {
-    
+export default class Signup extends Component {
     render() {
         return(
             <View style={styles.container}>
-                <Logo>
-                    <Text>Welcome to My app</Text>
-                </Logo>
+                <Logo/>
                 <Form/>
                 <View style={styles.signupTextCont}>
-                    <Text style={styles.signupText}>Dont have an account yet?</Text>
-                    <TouchableOpacity onPress={ () => this.props.navigation.navigate('Register') }>
-                        <Text style={styles.signupButton}> Sign up</Text>
+                    <Text style={styles.signupText}>Already have an account?</Text>
+                    <TouchableOpacity onPress={ ()=>this.props.navigation.navigate('Login') }>
+                        <Text style={styles.signupButton}> Sign in</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={ ()=>this.props.navigation.navigate('Maps') }>
+                        <Text style={styles.signupButton}> MAPS</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -45,5 +45,5 @@ const styles = StyleSheet.create({
         color:'#ffffff',
         fontSize:16,
         fontWeight:'500'
-    },
+    }
 });

@@ -191,6 +191,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-maps')
 
     if (enableHermes) {
       def hermesPath = "../../node_modules/hermesvm/android/";
