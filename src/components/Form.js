@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, Alert, AsyncStorage, TouchableOpacity } from 'react-native';
-import User from '../screen/User'
+import User from '../screen/User';
+import firebase from 'firebase';
 
 export default class Form extends Component {
     constructor(props){
@@ -26,8 +27,8 @@ export default class Form extends Component {
         } else {
             await AsyncStorage.setItem('email',this.state.email)
             User.email = this.state.email
-            alert(this.state.email+'\n'+this.state.password)
-            this.props.navigation.navigate('App')
+            firebase.database().ref('users/'+User.email).set({name: this.state.password});
+            this.props.navigation.navigate('App');
         }
         
     }

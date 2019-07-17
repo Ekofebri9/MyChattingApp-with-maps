@@ -11,7 +11,7 @@ export default class Login extends Component {
                 <Logo>
                     <Text>Welcome to My app</Text>
                 </Logo>
-                <Form/>
+                <Form navigation={this.props.navigation}/>
                 <View style={styles.signupTextCont}>
                     <Text style={styles.signupText}>Dont have an account yet?</Text>
                     <TouchableOpacity onPress={ () => this.props.navigation.navigate('Register') }>
