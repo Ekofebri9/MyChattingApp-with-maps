@@ -1,7 +1,36 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert, AsyncStorage, TouchableOpacity } from 'react-native';
+import User from '../screen/User'
 
-export default class Logo extends Component {
+export default class Form extends Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            email: '',
+            password: ''
+        }
+    }
+    componentWillMount() {
+        AsyncStorage.getItem('email').then(val => {
+            if (val) {
+                this.setState({email:val})
+            }
+        })
+    }
+    changerValue = field => value => { this.setState({[field]:value})}
+    submit = async () => { 
+        if (this.state.email.length < 5) {
+            Alert.alert('Error','email salah')
+        } else if (this.state.password.length < 3) {
+            Alert.alert('Error','password salah')
+        } else {
+            await AsyncStorage.setItem('email',this.state.email)
+            User.email = this.state.email
+            alert(this.state.email+'\n'+this.state.password)
+            this.props.navigation.navigate('App')
+        }
+        
+    }
     render(){
         return(
             <View style={styles.container}>
@@ -11,6 +40,8 @@ export default class Logo extends Component {
                     placeholderTextColor = "#ffffff"
                     selectionColor="#fff"
                     keyboardType="email-address"
+                    value={this.state.email}
+                    onChangeText={this.changerValue('email')}
                     onSubmitEditing={()=> this.password.focus()}/>
                 <TextInput style={styles.inputBox}
                     underlineColorAndroid='rgba(0,0,0,0)'
@@ -18,8 +49,10 @@ export default class Logo extends Component {
                     selectionColor="#fff"
                     secureTextEntry={true}
                     placeholderTextColor = "#ffffff"
+                    value={this.state.password}
+                    onChangeText={this.changerValue('password')}
                     ref={(input) => this.password = input}/>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={this.submit}>
                     <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>    
             </View>

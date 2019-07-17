@@ -1,7 +1,7 @@
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import React, { Component } from 'react';
-import {View, Text, TouchableOpacity, TextInput, AsyncStorage, Dimensions} from 'react-native';
-const {width,height} = Dimensions.get('window')
+import { View, Text, TouchableOpacity, TextInput, AsyncStorage, Dimensions } from 'react-native';
+const { width, height } = Dimensions.get('window')
 
 const ASPECT_RATIO = width / height;
 const LATITUDE = -7.7584436;
@@ -9,8 +9,8 @@ const LONGITUDE = 110.3759749;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-class Maps extends Component{
-    constructor(props){
+export default class Maps extends Component {
+    constructor(props) {
         super(props)
         this.state = {
             region: {
@@ -23,21 +23,40 @@ class Maps extends Component{
     }
 
     static navigationOptions = {
-        header:null
+        header: null
     }
-      
+
     onRegionChange = (region) => {
         this.setState({ region });
     }
-    render(){
-        return(
-            <MapView
-                style={{flex:1, width:width}}
+    logout = async () => {
+        await AsyncStorage.clear();
+        this.props.navigation.navigate('Auth');
+    }
+    render() {
+        return (
+            <View style={{flex: 1,
+                alignItems:'center',
+                justifyContent :'center'}
+            }>
+                <TouchableOpacity onPress={this.logout}>
+                    <Text>Logout</Text>
+                </TouchableOpacity>
+                <MapView
+                style={{ flex: 1, width: width, }}
                 provider={PROVIDER_GOOGLE}
-                region={this.state.region}
-            />
+                region={this.state.region}>
+                <Marker coordinate={{
+                        latitude: LATITUDE,
+                        longitude: LONGITUDE, }}
+                    title={'cba'}
+                    description={'cek'}
+                />
+            </MapView>
+            </View>
+            
+
         )
     }
 }
 
-export default Maps
