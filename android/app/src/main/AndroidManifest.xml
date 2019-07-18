@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     
     
     <application
@@ -26,7 +27,7 @@
       <uses-library android:name="org.apache.http.legacy" android:required="false"/>
       <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyB6mWX7I8H-WMGEj3Mqv2SZfx00FY2XYI0"/>
+        android:value="AIzaSyCJherh46tIEHA3wVm3xIA0zoGHit5Nz7I"/>
     </application>
 
 </manifest>

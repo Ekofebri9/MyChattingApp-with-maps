@@ -8,7 +8,7 @@ export default class Signup extends Component {
         return(
             <View style={styles.container}>
                 <Logo/>
-                <Form/>
+                <Form navigation={this.props.navigation}/>
                 <View style={styles.signupTextCont}>
                     <Text style={styles.signupText}>Already have an account?</Text>
                     <TouchableOpacity onPress={ ()=>this.props.navigation.navigate('Login') }>

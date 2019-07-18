@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet,TextInput,FlatList, Text, View, TouchableOpacity,SafeAreaView, Dimensions } from 'react-native'; 
-import firebase from 'firebase';
+import firebase from './rootNavigator/firebase';
 import User from './User';
 
 export default class Chat extends Component {
@@ -8,7 +8,8 @@ export default class Chat extends Component {
         super(props);
         this.state ={
             person: {
-                email: props.navigation.getParam('email'),
+                uid: props.navigation.getParam('uid'),
+                emails: props.navigation.getParam('email'),
                 password: props.navigation.getParam('name')
             },
             message: '',
@@ -25,16 +26,16 @@ export default class Chat extends Component {
     }
     send = async () => {
         if (this.state.message.length > 0) {
-            let msgId = firebase.database().ref('messages').child(User.email)
-            .child(this.state.person.email).push().key;
+            let msgId = firebase.database().ref('messages').child(User.uid)
+            .child(this.state.person.uid).push().key;
             let updates = {}
             let message = {
                 message: this.state.message,
                 time: firebase.database.ServerValue.TIMESTAMP,
-                from: User.email
+                from: User.uid
             }
-            updates['messages/'+ User.email+'/'+this.state.person.email+'/'+msgId] = message;
-            updates['messages/'+ this.state.person.email+'/'+User.email+'/'+msgId] = message;
+            updates['messages/'+ User.uid+'/'+this.state.person.uid+'/'+msgId] = message;
+            updates['messages/'+ this.state.person.uid+'/'+User.uid+'/'+msgId] = message;
             firebase.database().ref().update(updates);
             this.setState({message: ''})
         }
@@ -42,8 +43,8 @@ export default class Chat extends Component {
     _renderItem = ({ item }) => {
         return (
             <View style={{flexDirection: 'row', width: '60%', 
-            alignSelf: item.from === User.email ? 'flex-end' : 'flex-start',
-            backgroundColor: item.from === User.email ? '#00897b' : '#7cb342',
+            alignSelf: item.from === User.uid ? 'flex-end' : 'flex-start',
+            backgroundColor: item.from === User.uid ? '#00897b' : '#7cb342',
             borderRadius: 5,
             marginBottom:10 }}>
                 <Text>{item.message}</Text>
@@ -52,7 +53,7 @@ export default class Chat extends Component {
         )
     }
     componentDidMount(){
-        let dbRef = firebase.database().ref('messages').child(User.email).child(this.state.person.email)
+        let dbRef = firebase.database().ref('messages').child(User.uid).child(this.state.person.uid)
         .on('child_added',(val)=>{
             this.setState((prevState)=>{
                     return {
@@ -81,7 +82,7 @@ export default class Chat extends Component {
                 style={{padding:10,height: height*0.8,}}
                 data={this.state.messageList}
                 renderItem={this._renderItem}
-                keyExtractor={(item,index) => index.toString}
+                keyExtractor={(item,index) => index.toString()}
                 />
                 <View style={{flexDirection: 'row', alignItems: 'center', marginHorizontal: 5}}>
                 <TextInput 

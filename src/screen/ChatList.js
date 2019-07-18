@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, TouchableOpacity, SafeAreaView, FlatList, AsyncStorage, Image } from 'react-native';
-import firebase from 'firebase';
+import firebase from './rootNavigator/firebase';
+import Geolocation from '@react-native-community/geolocation';
 import User from './User';
 export default class ChatList extends Component {
     constructor(props) {
@@ -15,7 +16,7 @@ export default class ChatList extends Component {
             title: 'Chats',
         headerRight: (
             <TouchableOpacity onPress={()=>navigation.navigate('MyProfile')}>
-                <Image source={require('../assets/Logo.png')} style={{width:32, hight:32}}/>
+                {/* <Image source={require('../assets/Logo.png')} style={{width:32, hight:32}}/> */}
             </TouchableOpacity>
         )
         }
@@ -26,8 +27,12 @@ export default class ChatList extends Component {
         let dbRef = firebase.database().ref('users');
         dbRef.on('child_added',(val)=>{
             let person = val.val();
-            person.email = val.key;
-            if (person.email === User.email) {
+            person.uid = val.key;
+            if (person.uid === User.uid) {
+                User.name = person.name
+                User.telp = person.telp
+                User.birthday = person.birthday
+                User.email = person.email
                 User.password = person.password
             }else {
                 this.setState((prevState)=>{
@@ -38,8 +43,21 @@ export default class ChatList extends Component {
             }
             
         })
+        
     }
     logout = async () => {
+        Geolocation.getCurrentPosition(
+            async (position) => {
+                await firebase.database().ref('users/' + User.uid).update({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            },
+            (error) => {
+                alert(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
         await AsyncStorage.clear();
         this.props.navigation.navigate('Auth');
     }
@@ -60,7 +78,7 @@ export default class ChatList extends Component {
                 <FlatList 
                 data={this.state.users}
                 renderItem={this._renderItem}
-                keyExtractor={(item) => item.email}
+                keyExtractor={(item,index) => index.toString()}
                 />
                 <TouchableOpacity onPress={this.logout}>
                     <Text>Logout</Text>

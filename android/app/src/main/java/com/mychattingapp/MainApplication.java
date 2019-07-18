@@ -7,6 +7,7 @@ import com.facebook.react.PackageList;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.geolocation.GeolocationPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.reactnativecommunity.geolocation.GeolocationPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -36,9 +38,10 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-                new MainReactPackage(),
-                new MapsPackage(),
-                new RNGestureHandlerPackage()
+            new MainReactPackage(),
+            new MapsPackage(),
+            new RNGestureHandlerPackage(),
+            new GeolocationPackage()
         );
     }
 
