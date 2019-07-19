@@ -35,7 +35,7 @@ const App = createStackNavigator({
     }
 })
 const HomeContainer = createAppContainer(createSwitchNavigator(
-    {
+    {   
         IsLogin: IsLogin,
         App: App,
         Auth: Auth,

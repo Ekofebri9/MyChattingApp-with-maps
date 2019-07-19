@@ -5,8 +5,7 @@ export default class Logo extends Component {
     render(){
         return(
             <View style={styles.container}>
-                <Image  style={{width:40, height: 70}}
-                    source={require('../assets/Logo.png')}/>
+                <Image  source={require('../assets/logo.png')} style={{width:70, height: 70}}/>
                 <Text style={styles.logoText}>Find Me and Chat</Text>
             </View>
         )
@@ -21,7 +20,8 @@ const styles = StyleSheet.create({
     },
     logoText : {
         marginVertical: 15,
-        fontSize:18,
+        fontSize: 24,
+        fontFamily: 'sans-serif-thin',
         color:'rgba(255, 255, 255, 0.7)'
     }
 });

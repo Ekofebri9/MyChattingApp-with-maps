@@ -2,9 +2,10 @@ import React from 'react';
 import {
   ActivityIndicator,
   AsyncStorage,
-  StatusBar,
+  StyleSheet,
   View,
 } from 'react-native';
+import Logo from '../components/Logo';
 import User from './User';
 
 export default class IsLogin extends React.Component {
@@ -12,19 +13,25 @@ export default class IsLogin extends React.Component {
     super(props);
     this._bootstrapAsync();
   }
-  // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
     User.uid = await AsyncStorage.getItem('uid');
-    this.props.navigation.navigate(User.uid ? 'App' : 'Auth');
+    setTimeout(()=>this.props.navigation.navigate(User.uid ? 'App' : 'Auth'),1000)
+    
   };
-
-  // Render any loading content that you like here
   render() {
     return (
-      <View>
-        <ActivityIndicator />
-        <StatusBar barStyle="default" />
+      <View style={styles.container}>
+        <Logo />
+        <ActivityIndicator size="large" color="#afb4ba" />
       </View>
     );
   }
 }
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#455a64',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+});

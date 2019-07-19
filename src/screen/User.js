@@ -3,7 +3,7 @@ const User = {
     email: null,
     password: null,
     name: null,
-    // birthday: new Date,
-    telp: null
+    telp: null,
+    photo: null,
 }
 export default User;

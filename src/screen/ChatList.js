@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Text, TouchableOpacity, SafeAreaView, FlatList, AsyncStorage, Image } from 'react-native';
+import { Text, TouchableOpacity, SafeAreaView, FlatList, Image,View } from 'react-native';
 import firebase from './rootNavigator/firebase';
-import Geolocation from '@react-native-community/geolocation';
+import Icon from 'react-native-vector-icons/FontAwesome5'
 import User from './User';
+import styles from '../assets/Styles';
 export default class ChatList extends Component {
     constructor(props) {
         super(props)
@@ -14,15 +15,18 @@ export default class ChatList extends Component {
     static navigationOptions = ({navigation})=> {
         return {
             title: 'Chats',
-        headerRight: (
-            <TouchableOpacity onPress={()=>navigation.navigate('MyProfile')}>
-                {/* <Image source={require('../assets/Logo.png')} style={{width:32, hight:32}}/> */}
-            </TouchableOpacity>
-        )
+            headerLeft: (
+                <TouchableOpacity onPress={()=>navigation.navigate('Maps')}>
+                    <Icon name='map-marked-alt' size={30} color='#455a64' style={{padding:10 }}/>
+                </TouchableOpacity>
+            ),
+            headerRight: (
+                <TouchableOpacity onPress={()=>navigation.navigate('MyProfile')}>
+                    <Icon name='user-cog' size={30} color='#455a64' style={{padding:10 }}/>
+                </TouchableOpacity>
+            ),
         }
-        
     }
-
     componentDidMount(){
         let dbRef = firebase.database().ref('users');
         dbRef.on('child_added',(val)=>{
@@ -31,7 +35,7 @@ export default class ChatList extends Component {
             if (person.uid === User.uid) {
                 User.name = person.name
                 User.telp = person.telp
-                User.birthday = person.birthday
+                User.photo = person.photo
                 User.email = person.email
                 User.password = person.password
             }else {
@@ -44,22 +48,6 @@ export default class ChatList extends Component {
             
         })
         
-    }
-    logout = async () => {
-        Geolocation.getCurrentPosition(
-            async (position) => {
-                await firebase.database().ref('users/' + User.uid).update({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                });
-            },
-            (error) => {
-                alert(error.code, error.message);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
-        await AsyncStorage.clear();
-        this.props.navigation.navigate('Auth');
     }
     maps = async () => {
         this.props.navigation.navigate('Maps');
@@ -75,17 +63,14 @@ export default class ChatList extends Component {
     render() {
         return (
             <SafeAreaView>
+                <View style={styles.containerRegister}>
                 <FlatList 
                 data={this.state.users}
                 renderItem={this._renderItem}
                 keyExtractor={(item,index) => index.toString()}
                 />
-                <TouchableOpacity onPress={this.logout}>
-                    <Text>Logout</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={this.maps}>
-                    <Text>Go Maps</Text>
-                </TouchableOpacity>
+                </View>
+                
             </SafeAreaView>
         )
     }
