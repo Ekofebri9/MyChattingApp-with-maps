@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import Logo from '../components/Logo';
 import Form from '../components/Form';
 import styles from '../assets/Styles';

@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  AsyncStorage,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, AsyncStorage, View, } from 'react-native';
 import Logo from '../components/Logo';
+import styles from '../assets/Styles';
 import User from './User';
 
 export default class IsLogin extends React.Component {
@@ -20,18 +16,10 @@ export default class IsLogin extends React.Component {
   };
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.containerIsLoading}>
         <Logo />
         <ActivityIndicator size="large" color="#afb4ba" />
       </View>
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#455a64',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-});

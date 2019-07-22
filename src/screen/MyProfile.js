@@ -30,7 +30,7 @@ export default class MyProfile extends Component {
         Alert.alert('Logout', 'Do you want to logout?', [
             {
                 text: 'Yes', onPress: async () => {
-                    Geolocation.getCurrentPosition(
+                    await Geolocation.getCurrentPosition(
                         async (position) => {
                             await firebase.database().ref('users/' + User.uid).update({
                                 latitude: position.coords.latitude,
@@ -54,59 +54,63 @@ export default class MyProfile extends Component {
 
     }
     submit = async () => {
-        Geolocation.getCurrentPosition(
+        await Geolocation.getCurrentPosition(
             async (position) => {
                 await firebase.database().ref('users/' + User.uid).update({
                     name: this.state.name.trim(),
                     email: this.state.email.trim(),
                     telp: this.state.telp,
-                    photo: this.state.photo || "https://images-na.ssl-images-amazon.com/images/I/51AfUgaGboL._SY445_.jpg",
+                    photo: this.state.photo || "https://visualpharm.com/assets/71/Add%20User%20Male-595b40b65ba036ed117d36f8.svg",
                     password: this.state.password.trim(),
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     status: true
                 });
+                User.name = this.state.name.trim()
+                User.telp = this.state.telp
+                User.photo = this.state.photo
+                User.email = this.state.email.trim()
+                User.password = this.state.password.trim()
+                this.setModalVisible(!this.state.modalVisible)
+                this.props.navigation.navigate('ChatList')
             },
             (error) => {
                 alert(error.code, error.message);
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
-        () => this.setModalVisible(!this.state.modalVisible)
     }
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
+            <View style={styles.containerMyProfile}>
                 <View style={{ flex: 2, backgroundColor: 'white' }}>
-                    <Image source={{ uri: User.photo }} style={{ width: '80%', height: '100%', alignSelf: 'center' }} />
+                    <Image source={{ uri: User.photo }} style={styles.photoInProfile} />
                 </View>
                 <View style={{ flex: 3, backgroundColor: '#455a64' }}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                    <View style={styles.viewProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='user-astronaut' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{User.name}</Text>
+                        <Text numberOfLines={2} style={styles.textProfile}>{User.name}</Text>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                    <View style={styles.viewProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='mail-bulk' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{User.email}</Text>
+                        <Text numberOfLines={2} style={styles.textProfile}>{User.email}</Text>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                    <View style={styles.viewProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='phone-volume' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{User.telp}</Text>
+                        <Text style={styles.textProfile}>{User.telp}</Text>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
-                        <TouchableOpacity onPress={() => {
-                            this.setModalVisible(true);
-                        }} style={{ flex: 1, marginHorizontal: 5, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 7, backgroundColor: 'rgba(255, 255,255,0.2)' }}>
+                    <View style={styles.viewProfile}>
+                        <TouchableOpacity onPress={() => this.setModalVisible(true)} style={styles.buttonMyProfile}>
                             <Icon name='user-edit' color='#dbff26' size={40} style={{ padding: 10 }} />
                             <Text style={{ fontSize: 18, color: '#dbff26', }}>Edit profile</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={this.logout} style={{ flex: 1, marginHorizontal: 5, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 7, backgroundColor: 'rgba(255, 255,255,0.2)' }}>
+                        <TouchableOpacity onPress={this.logout} style={styles.buttonMyProfile}>
                             <Icon name='sign-out-alt' color='#fa1134' size={40} style={{ padding: 10 }} />
                             <Text style={{ fontSize: 18, color: '#fa1134', }}>Logout</Text>
                         </TouchableOpacity>
@@ -121,8 +125,8 @@ export default class MyProfile extends Component {
                         onPress={() => {
                             this.setModalVisible(!this.state.modalVisible);
                         }}>
-                        <View style={[styles.containerRegister, { alignSelf: 'center' }]}>
-                            <TextInput style={[styles.inputBox, { marginVertical: 5 }]}
+                        <View style={styles.containerRegister}>
+                            <TextInput style={styles.inputBox}
                                 placeholder="Full Name"
                                 placeholderTextColor="#ffffff"
                                 selectionColor="#fff"

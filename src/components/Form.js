@@ -9,37 +9,17 @@ export default class Form extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            uid: '',
             email: '',
             password: '',
         }
     }
-    componentDidMount() {
-        AsyncStorage.getItem('uid').then(val => {
-            if (val) {
-                this.setState({ uid: val })
-            }
-        });
-    }
     changerValue = field => value => { this.setState({ [field]: value }) }
     submit = () => {
-        
         firebase.auth().signInWithEmailAndPassword(this.state.email.trim(), this.state.password.trim())
             .then(async (result) => {
                 await AsyncStorage.setItem('uid', result.user.uid)
                 User.uid = result.user.uid
-                Geolocation.getCurrentPosition(
-                    async (position) => {
-                        await firebase.database().ref('users/' + result.user.uid).update({
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            status: true
-                        });
-                    },
-                    (error) => {
-                        alert(error.code, error.message);
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-                );
                 this.props.navigation.navigate('App');
             })
             .catch(function (error) {

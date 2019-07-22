@@ -7,6 +7,29 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         paddingVertical: 13
     },
+    buttonMap: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        height: '10%',
+        width: '20%'
+    },
+    buttonMaps: {
+        borderColor: 'white',
+        borderWidth: 1,
+        width: 50,
+        height: 50,
+        borderRadius: 150
+    },
+    buttonMyProfile: {
+        flex: 1,
+        marginHorizontal: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 7,
+        backgroundColor: 'rgba(255, 255,255,0.2)'
+    },
     buttonText: {
         fontSize: 16,
         fontWeight: '500',
@@ -18,16 +41,63 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    containerChatList: {
+        backgroundColor: '#455a64',
+        alignItems: 'center',
+        padding: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        flexDirection: 'row',
+        width: '100%',
+        height: 75
+    },
+    containerLogo: {
+        flexGrow: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
     containerMap: {
         flex: 3,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    containerRegister : {
-        backgroundColor:'#455a64',
+    containerMyProfile: {
         flex: 1,
-        alignItems:'center',
-        justifyContent :'center'
+        backgroundColor: 'white'
+    },
+    containerProfile: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 2,
+        borderBottomColor: 'white'
+    },
+    containerRegister: {
+        backgroundColor: '#455a64',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    containerIsLoading: {
+        backgroundColor: '#455a64',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    imgChatList: {
+        width: '20%',
+        height: '100%',
+        borderRadius: 100
+    },
+    imgMap: {
+        width: '30%',
+        height: '100%',
+        alignSelf: 'flex-start'
+    },
+    imgMaps: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 150
     },
     inputBox: {
         width: 300,
@@ -56,26 +126,59 @@ const styles = StyleSheet.create({
         height: '25%',
         backgroundColor: 'rgba(255,255,255, 0.3)'
     },
+    logoText: {
+        marginVertical: 15,
+        fontSize: 24,
+        fontFamily: 'sans-serif-thin',
+        color: 'rgba(255, 255, 255, 0.7)'
+    },
+    photoInProfile: {
+        width: '80%',
+        height: '100%',
+        alignSelf: 'center'
+    },
     signupButton: {
-        color:'#ffffff',
-        fontSize:16,
-        fontWeight:'500'
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '500'
     },
     signupText: {
-        color:'rgba(255,255,255,0.6)',
-        fontSize:16
+        color: 'rgba(255,255,255,0.6)',
+        fontSize: 16
     },
-    signupTextCont : {
+    signupTextCont: {
         flexGrow: 1,
-        alignItems:'flex-end',
-        justifyContent :'center',
-        paddingVertical:16,
-        flexDirection:'row'
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        flexDirection: 'row'
+    },
+    textChatList: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white'
+    },
+    textProfile: {
+        fontSize: 18,
+        color: 'white'
     },
     textStatusMap: {
         fontWeight: 'bold',
         textAlign: 'center',
         backgroundColor: 'white',
+    },
+    viewMap: {
+        width: 250,
+        height: 100,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    viewProfile: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 2,
+        borderBottomColor: 'white'
     }
 });
 export default styles;

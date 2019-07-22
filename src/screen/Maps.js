@@ -1,6 +1,6 @@
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, AsyncStorage, Dimensions, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Dimensions, FlatList, Image } from 'react-native';
 import firebase from './rootNavigator/firebase';
 import Geolocation from '@react-native-community/geolocation';
 import User from './User';
@@ -16,35 +16,29 @@ export default class Maps extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            region: {
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA,
-            },
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
             users: [],
         }
     }
-
     static navigationOptions = {
         header: null
     }
-    componentDidMount() {
-        Geolocation.getCurrentPosition(
-            async (position) => {
-                console.warn(position)
-                await this.setState({longitude: position.coords.longitude, latitude: position.coords.latitude })
-            },
-            (error) => {
-                alert(error.code, error.message+'there');
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
+    async componentDidMount() {
         let dbRef = firebase.database().ref('users');
+        let dbRef1 = firebase.database().ref('users/' + User.uid);
         dbRef.on('child_added', (val) => {
             let person = val.val();
             person.uid = val.key;
-            if (person.uid !== User.uid) {
+            if (person.uid === User.uid) {
+                User.name = person.name
+                User.telp = person.telp
+                User.photo = person.photo
+                User.email = person.email
+                User.password = person.password
+            } else {
                 this.setState((prevState) => {
                     return {
                         users: [...prevState.users, person]
@@ -52,28 +46,56 @@ export default class Maps extends Component {
                 })
             }
         })
+        dbRef.on('child_changed', (val) => {
+            let person = val.val();
+            person.uid = val.key;
+            if (person.uid !== User.uid) {
+                this.setState((prevState) => {
+                    return {
+                        // let Users = prevState.users.filter(user => user.uid !== person.uid )
+                        // return {
+                        //     users: [...Users, person]
+                        // }
+                        users: prevState.users.map(user => {
+                            if (user.uid === person.uid) {
+                                user = person
+                            }
+                            return user
+                        })
+                    }
+                })
+            }
+        })
+        dbRef1.onDisconnect().update({ status: false })
+        this.idInterval = setInterval(this.getLocation,7000)
     }
-
-    onRegionChange = (region) => {
-        this.setState({ region });
-    }
-    logout = async () => {
-        await AsyncStorage.clear();
-        this.props.navigation.navigate('Auth');
+    getLocation = async () =>
+    await Geolocation.getCurrentPosition(
+        async (position) => {
+            await this.setState({ longitude: position.coords.longitude, latitude: position.coords.latitude })
+        },
+        (error) => {
+            Alert.alert(error.code, error.message);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    )
+    componentWillUnmount(){
+        clearInterval(this.idInterval)
     }
     _renderItem = ({ item }) => {
         return (
             <TouchableOpacity style={styles.itemMap} onPress={() => {
-                let LatitudeDelta = LATITUDE_DELTA-0.003
-                let LongitudeDelta = LatitudeDelta*ASPECT_RATIO
+                let LatitudeDelta = LATITUDE_DELTA - 0.003
+                let LongitudeDelta = LatitudeDelta * ASPECT_RATIO
                 _mapView.animateToRegion({
-                latitude: item.latitude,
-                longitude: item.longitude,
-                latitudeDelta: LatitudeDelta,
-                longitudeDelta: LongitudeDelta,
-            })}}>
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    latitudeDelta: LatitudeDelta,
+                    longitudeDelta: LongitudeDelta,
+                })
+            }}>
                 <Image source={{ uri: item.photo }} style={{ width: '100%', height: '80%' }} />
-                <Text style={{ textAlign: 'center' }}>{item.name}</Text>
+                <Text numberOfLines={1} style={{ textAlign: 'center' }}>{item.name}</Text>
                 {(item.status) ?
                     (<Text style={[styles.textStatusMap, { color: '#11f515' }]}>Online</Text>) :
                     (<Text style={[styles.textStatusMap, { color: '#f00514' }]}>Offline</Text>)
@@ -84,25 +106,41 @@ export default class Maps extends Component {
     render() {
         return (
             <View style={styles.containerMap}>
-                <View style={{position: 'absolute', top: '50%', left: 0, height:'100%'}} >
-                <TouchableOpacity style={{backgroundColor: 'white'}}>
-                    <Image source={{uri: User.photo}} width={30} height={30} borderRadius={5} />
-                </TouchableOpacity>
-                </View>
-                
                 <MapView
                     customMapStyle={mapStyle}
                     ref={(mapView) => { _mapView = mapView }}
                     style={{ flex: 1, width: width, }}
                     provider={PROVIDER_GOOGLE}
-                    region={this.state.region}>
+                    initialRegion={{
+                        latitude: this.state.latitude,
+                        longitude: this.state.longitude,
+                        latitudeDelta: this.state.latitudeDelta,
+                        longitudeDelta: this.state.longitudeDelta
+                    }}>
+                    <Marker coordinate={{
+                        latitude: this.state.latitude,
+                        longitude: this.state.longitude,
+                    }} title='YOU' pinColor='green' />
                     {this.state.users.map(user => (
                         <Marker coordinate={{
                             latitude: user.latitude,
-                            longitude: user.longitude,
-                        }}
-                            title={user.name}
-                            description={user.email}>
+                            longitude: user.longitude
+                        }}>
+                            <MapView.Callout tooltip={false}>
+                                <View style={styles.viewMap}>
+                                    <Image source={{ uri: user.photo }} style={styles.imgMap} />
+                                    <View style={{ width: '20%' }}>
+                                        <Text>Name </Text>
+                                        <Text>Email</Text>
+                                        <Text>Telp </Text>
+                                    </View>
+                                    <View style={{ width: '50%' }}>
+                                        <Text numberOfLines={1}>:{user.name}</Text>
+                                        <Text numberOfLines={1}>:{user.email}</Text>
+                                        <Text>:{user.telp}</Text>
+                                    </View>
+                                </View>
+                            </MapView.Callout>
                         </Marker>
                     ))}
                 </MapView>
@@ -112,6 +150,11 @@ export default class Maps extends Component {
                         renderItem={this._renderItem}
                         keyExtractor={(item, index) => index.toString()}
                     />
+                </View>
+                <View style={styles.buttonMap} >
+                    <TouchableOpacity style={styles.buttonMaps}>
+                        <Image source={{ uri: User.photo }} style={styles.imgMaps} />
+                    </TouchableOpacity>
                 </View>
             </View>
         )

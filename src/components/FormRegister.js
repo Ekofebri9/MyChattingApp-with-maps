@@ -18,10 +18,14 @@ export default class Logo extends Component {
     }
     changerValue = field => value => { this.setState({[field]:value})}
     submit = async () => { 
-        if (this.state.name.length < 4 ) {
-            Alert.alert('Error','name is not valid,it should be at least 4 caracters')
-        } else if (this.state.telp.length < 10) {
-            Alert.alert('Error','telephone numbers is not valid')
+        let nameLength = this.state.name.length
+        let telpLength = this.state.telp.length
+        if (nameLength < 4 || nameLength > 64 || !(/^[a-zA-Z]+([a-zA-Z ]?[a-zA-Z]*)*$/g).test(this.state.name.valueOf()) ) {
+            Alert.alert('Error','name is not valid,it should be alphabet at least 4 and max 64 caracters')
+        } else if ( !(/^[a-zA-Z0-9._-]+@[A-Z0-9._-]+\.[A-Z]{2,}$/ig).test(this.state.email.valueOf()) ) {
+            Alert.alert('Error','email is not valid')
+        } else if (telpLength < 10 || telpLength > 13 || !(/^[0-9]*$/g).test(this.state.telp.valueOf()) ) {
+            Alert.alert('Error','telephone numbers is not valid, it should be numbers at least 10 and max 13 digits')
         } else {
             await AsyncStorage.setItem('email',this.state.email.trim())
             await AsyncStorage.setItem('password',this.state.password.trim())
@@ -37,29 +41,28 @@ export default class Logo extends Component {
                             name: this.state.name.trim(),
                             email: this.state.email.trim(),
                             telp: this.state.telp,
-                            photo: this.state.photo || "https://images-na.ssl-images-amazon.com/images/I/51AfUgaGboL._SY445_.jpg",
+                            photo: this.state.photo || "https://www.marketingmuses.com/wp-content/uploads/2018/01/invis-user.png",
                             password: this.state.password.trim(),
                             latitude: position.coords.latitude,
                             longitude: position.coords.longitude,
                             status: true
                         });
+                        this.props.navigation.navigate('App');
                     },
                     (error) => {
-                        alert(error.code, error.message);
+                        Alert.alert(error.code, error.message);
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
                 );
-                this.props.navigation.navigate('App');
             }).catch(function(error) {
                 var errorCode = error.code;
                 var errorMessage = error.message;
                 if (errorCode == 'auth/weak-password') {
-                  alert('The password is too weak.');
+                  alert('The password is too weak, please use at least 6 caracters');
                 } else {
                   alert(errorMessage);
                 }
-                console.log(error);
-              });
+            });
         }
     }
     render(){

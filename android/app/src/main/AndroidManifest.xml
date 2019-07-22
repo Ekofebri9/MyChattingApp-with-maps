@@ -1,11 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.mychattingapp">
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    
-    
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -27,7 +24,7 @@
       <uses-library android:name="org.apache.http.legacy" android:required="false"/>
       <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyCJherh46tIEHA3wVm3xIA0zoGHit5Nz7I"/>
+        android:value="@string/GOOGLE_MAPS_API_KEY"/>
     </application>
 
 </manifest>

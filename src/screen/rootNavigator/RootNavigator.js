@@ -7,6 +7,7 @@ import ChatList from '../ChatList'
 import User from '../User'
 import IsLogin from '../IsLogin'
 import MyProfile from '../MyProfile'
+import Profile from '../Profile'
 const Auth = createStackNavigator({
     Login:{
         screen:Login
@@ -32,6 +33,9 @@ const App = createStackNavigator({
     },
     MyProfile: {
         screen: MyProfile
+    },
+    Profile: {
+        screen: Profile
     }
 })
 const HomeContainer = createAppContainer(createSwitchNavigator(

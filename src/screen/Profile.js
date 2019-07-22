@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Image, AsyncStorage, Alert, Modal, TextInput } from 'react-native';
 import firebase from './rootNavigator/firebase';
 import Geolocation from '@react-native-community/geolocation';
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import User from './User';
 import styles from '../assets/Styles';
 
@@ -16,35 +16,35 @@ export default class MyProfile extends Component {
             photo: props.navigation.getParam('photo')
         }
     }
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({ navigation }) => {
         return {
             title: navigation.getParam('name', null),
         }
     }
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <View style={{ flex: 2, backgroundColor: 'white' }}>
-                    <Image source={{ uri: this.state.photo }} style={{ width: '80%', height: '100%', alignSelf: 'center' }} />
+            <View style={{ flex: 1 }}>
+                <View style={styles.containerMyProfile}>
+                    <Image source={{ uri: this.state.photo }} style={styles.photoInProfile} />
                 </View>
-                <View style={{ flex: 3, backgroundColor: '#455a64' }}>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                <View style={{ flex: 1, backgroundColor: '#455a64' }}>
+                    <View style={styles.containerProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='user-astronaut' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{this.state.name}</Text>
+                        <Text style={styles.textProfile}>{this.state.name}</Text>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                    <View style={styles.containerProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='mail-bulk' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{this.state.email}</Text>
+                        <Text style={styles.textProfile}>{this.state.email}</Text>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'white' }}>
+                    <View style={styles.containerProfile}>
                         <View style={{ width: '20%' }}>
                             <Icon name='phone-volume' color='white' size={40} style={{ padding: 10 }} />
                         </View>
-                        <Text style={{ fontSize: 18, color: 'white', }}>{this.state.telp}</Text>
+                        <Text style={styles.textProfile}>{this.state.telp}</Text>
                     </View>
                 </View>
             </View>

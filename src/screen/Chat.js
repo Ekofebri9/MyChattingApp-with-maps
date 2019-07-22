@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, TextInput, FlatList, Text, View, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
-import firebase from 'firebase'
+import firebase from 'firebase';
 import User from './User';
-
+import { GiftedChat } from 'react-native-gifted-chat'
 export default class Chat extends Component {
     constructor(props) {
         super(props);
@@ -30,9 +30,14 @@ export default class Chat extends Component {
                 .child(this.state.person.uid).push().key;
             let updates = {}
             let message = {
-                message: this.state.message,
-                time: firebase.database.ServerValue.TIMESTAMP,
-                from: User.uid
+                    _id: msgId,
+                    text: this.state.message,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    user: {
+                      _id: User.uid,
+                      name: User.name,
+                      avatar: User.photo,
+                    }
             }
             updates['messages/' + User.uid + '/' + this.state.person.uid + '/' + msgId] = message;
             updates['messages/' + this.state.person.uid + '/' + User.uid + '/' + msgId] = message;
@@ -40,96 +45,25 @@ export default class Chat extends Component {
             this.setState({ message: '' })
         }
     }
-    _renderItem = ({ item }) => {
-        return (
-            <View style={{
-                flexDirection: 'row', width: '60%',
-                alignSelf: item.from === User.uid ? 'flex-end' : 'flex-start',
-                backgroundColor: item.from === User.uid ? '#00897b' : '#7cb342',
-                borderRadius: 5,
-                marginBottom: 10
-            }}>
-                <Text>{item.message}</Text>
-                <Text style={{ color: '#eee', padding: 3, fontSize: 12 }}>{this.formatDate(item.time)}</Text>
-            </View>
-        )
-    }
     componentDidMount() {
         let dbRef = firebase.database().ref('messages').child(User.uid).child(this.state.person.uid)
             .on('child_added', (val) => {
-                this.setState((prevState) => {
-                    return {
-                        messageList: [...prevState.messageList, val.val()]
-                    }
-                })
+                this.setState(previousState => ({
+                    messageList: GiftedChat.append(previousState.messageList, val.val()),
+                  }))
 
             })
     }
-    formatDate = (time) => {
-        let monthNames = [
-            "January", "February", "March",
-            "April", "May", "June", "July",
-            "August", "September", "October",
-            "November", "December"
-        ];
-        let date = new Date(time)
-        let today = new Date()
-        let result = (date.getHours() < 10 ? '0' : '') + date.getHours() + ':';
-        result += (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-        if (today.getDay() !== date.getDay()) {
-            result = date.getDay() + ' ' + monthNames[date.getMonth()] + ' ' + result;
-        }
-        return result
-    }
-
     render() {
-        let { height, width } = Dimensions.get('window')
         return (
-            <SafeAreaView>
-                <FlatList
-                        style={{ padding: 10, height: height * 0.8, }}
-                        data={this.state.messageList}
-                        renderItem={this._renderItem}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 5 }}>
-                        <TextInput
-                            value={this.state.message}
-                            onChangeText={this.changer('message')}
-                            placeholder='type here...'
-                        />
-                        <TouchableOpacity
-                            style={{ paddingBottom: 10, marginLeft: 5 }}
-                            onPress={this.send}>
-                            <Text>Send</Text>
-                        </TouchableOpacity>
-                    </View>
-            </SafeAreaView>
+            <GiftedChat
+            text={this.state.message}
+            onInputTextChanged={(val)=>{this.setState({message: val})}}
+            messages={this.state.messageList}
+            onSend={() => this.send()}
+            user={{_id : User.uid}
+            }
+          />
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#455a64',
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    signupTextCont: {
-        flexGrow: 1,
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        paddingVertical: 16,
-        flexDirection: 'row'
-    },
-    signupText: {
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: 16
-    },
-    signupButton: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: '500'
-    },
-});

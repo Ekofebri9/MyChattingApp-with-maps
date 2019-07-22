@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, TouchableOpacity, SafeAreaView, FlatList, Image,View } from 'react-native';
+import { Alert, Text, TouchableOpacity, SafeAreaView, FlatList, Image, View } from 'react-native';
 import firebase from './rootNavigator/firebase';
+import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import User from './User';
 import styles from '../assets/Styles';
@@ -8,28 +9,49 @@ export default class ChatList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-           users:[]
+            users: []
         }
     }
-
-    static navigationOptions = ({navigation})=> {
+    static navigationOptions = ({ navigation }) => {
         return {
             title: 'Chats',
             headerLeft: (
-                <TouchableOpacity onPress={()=>navigation.navigate('Maps')}>
-                    <Icon name='map-marked-alt' size={30} color='#455a64' style={{padding:10 }}/>
+                <TouchableOpacity onPress={() => navigation.navigate('Maps')}>
+                    <Icon name='map-marked-alt' size={30} color='#455a64' style={{ padding: 10 }} />
                 </TouchableOpacity>
             ),
             headerRight: (
-                <TouchableOpacity onPress={()=>navigation.navigate('MyProfile')}>
-                    <Icon name='user-cog' size={30} color='#455a64' style={{padding:10 }}/>
+                <TouchableOpacity onPress={() => navigation.navigate('MyProfile')}>
+                    <Icon name='user-cog' size={30} color='#455a64' style={{ padding: 10 }} />
                 </TouchableOpacity>
             ),
         }
     }
-    componentDidMount(){
-        let dbRef = firebase.database().ref('users');
-        dbRef.on('child_added',(val)=>{
+    async getMyLocation(status) {
+        const dbRef1 = firebase.database().ref('users/' + User.uid);
+        await Geolocation.getCurrentPosition(
+            async (position) => {
+                await dbRef1.update({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    status: status
+                });
+                // await dbRef1.onDisconnect().update({
+                //     latitude: position.coords.latitude,
+                //     longitude: position.coords.longitude,
+                //     status: false
+                // });
+            },
+            (error) => {
+                Alert.alert(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    }
+    componentDidMount() {
+        const dbRef = firebase.database().ref('users');
+        this.getMyLocation(true)
+        dbRef.on('child_added', (val) => {
             let person = val.val();
             person.uid = val.key;
             if (person.uid === User.uid) {
@@ -38,39 +60,63 @@ export default class ChatList extends Component {
                 User.photo = person.photo
                 User.email = person.email
                 User.password = person.password
-            }else {
-                this.setState((prevState)=>{
+                User.lat = person.lat
+                User.lng = person.lng
+            } else {
+                this.setState((prevState) => {
                     return {
                         users: [...prevState.users, person]
                     }
                 })
             }
-            
         })
-        
+        dbRef.on('child_changed', (val) => {
+            let person = val.val();
+            person.uid = val.key;
+            if (person.uid !== User.uid) {
+                this.setState((prevState) => {
+                    return {
+                        users: prevState.users.map(user => {
+                            if (user.uid === person.uid) {
+                                user = person
+                            }
+                            return user
+                        })
+                    }
+                })
+            }
+        })
     }
-    maps = async () => {
+    maps = () => {
         this.props.navigation.navigate('Maps');
     }
-    _renderItem = ({ item }) => {
-        return (
-            <TouchableOpacity style={{padding:10, borderBottomWidth:1, borderBottomColor:'#ccc'}} 
-            onPress={()=>this.props.navigation.navigate('Chat',item)}>
-                <Text>{item.name}</Text>
-            </TouchableOpacity>
-        )
+    componentWillUnmount(){
+        this.getMyLocation(false)
     }
     render() {
         return (
             <SafeAreaView>
-                <View style={styles.containerRegister}>
-                <FlatList 
-                data={this.state.users}
-                renderItem={this._renderItem}
-                keyExtractor={(item,index) => index.toString()}
+                <FlatList
+                    data={this.state.users}
+                    renderItem={({ item }) => {
+                        return (
+                            <TouchableOpacity style={styles.containerChatList}
+                                onLongPress={() => this.props.navigation.navigate('Profile', item)}
+                                onPress={() => this.props.navigation.navigate('Chat', item)}>
+                                <Image source={{ uri: item.photo }} style={styles.imgChatList} />
+                                <View style={{ padding: 10, }}>
+                                    <Text numberOfLines={1} style={styles.textChatList}>{item.name}</Text>
+                                    <Text numberOfLines={1} style={{ fontSize: 15, color: '#acaeb0' }}>{item.telp}</Text>
+                                    {(item.status) ?
+                                        (<Text style={{ fontSize: 15, color: '#11f515' }}>online</Text>) :
+                                        (<Text style={{ fontSize: 15, color: '#f00514' }}>offline</Text>)
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
                 />
-                </View>
-                
             </SafeAreaView>
         )
     }
